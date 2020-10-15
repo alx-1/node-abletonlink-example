@@ -2,18 +2,82 @@
     <head>
     </head>
 <body>
-    <h1>ableton link</h1>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
     <script src="http://code.jquery.com/color/jquery.color-2.1.2.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@0.5.2/lib/p5.min.js" type="text/javascript"></script>
     <script>
         var socket = io();
-        socket.on('beat', function(data) {
-            $("body")
-                .css({backgroundColor: '#f00'})
-                .animate({backgroundColor: '#fff'}, 120);
-            console.log(data.beat);
+        var myBeat = 42;
+        var myBPM = 66.6;
+        var myPhase = 0;
+        var numUsers = 0;
+        var myX = 100;
+        var myY = 250;
+        var myPlayState;
+        
+        function setup() {
+            createCanvas(windowWidth,windowHeight);
+            background(255);
+            noLoop(); // don't update draw
+        }
+
+        socket.on('numUsers', function(data) {
+            numUsers = data.numUsers;
         });
+    
+        socket.on('test', function(data) { // tryinbg to get the playState
+        myPlayState = data.test;
+        //console.log("test : "+myPlayState);
+        });
+    
+        socket.on('beat', function(data) {
+            myBeat = data.beat;
+            myBPM = data.bpm;
+            myBPM = myBPM.toFixed(2);
+            myPhase = data.phase;
+            myPhase = myPhase.toFixed(1);
+            redraw();
+        });
+            
+        function draw(){ // simple interface done in p5.js
+            clear();
+            fill("#000000");
+            textSize(32);
+            text('node-abletonlink-example', 100, 100);
+            //text('master puck', 100, 150);
+            text('beat :        '+myBeat, 100, 200);
+            text('BPM :       '+myBPM, myX, myY);
+            text('phase :      '+myPhase, 100, 300);
+            text('Clients :     '+numUsers, 100, 350);
+            //text('playState : '+myPlayState, 100, 350);
+            ellipse(myX+125, myY-10, 30); // circles to change the BPM
+            ellipse(myX+275, myY-10, 30);
+            fill("#FFFFFF");
+            text('+',myX+116,myY-2);
+            text('-',myX+270,myY-1);
+            }
+            
+       function mouseClicked(){
+           if(mouseX > myX+80 && mouseX < myX+150 && mouseY > myY-35 && mouseY < myY+25){
+           fill("#333333");
+           text('+',myX+116,myY-2);
+           ellipse(myX+125, myY-10, 30);
+           console.log('bpm +1');
+           var data =  { bpm:1 };
+           // var data =  { isPlaying:false };
+           socket.emit('chBPM', data);
+            } else if(mouseX > myX+250 && mouseX < myX+325 && mouseY > myY-35 && mouseY < myY+25){
+                fill("#333333");
+                text('-',myX+270,myY-1);
+                stroke(200, 200, 240);
+                ellipse(myX+275, myY-10, 30);
+                console.log('bpm -1');
+                var data =  { bpm:-1 };
+                socket.emit('chBPM', data);
+                }
+            }
+
     </script>
 </body>
 </html>

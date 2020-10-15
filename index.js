@@ -43,9 +43,9 @@ io.on('connection', (socket) => {  // start listening from events from the socke
     console.log('a user connected');
     
     socket.on('chBPM', (data) => {
-        console.log(data);
+        console.log(data.bpm);
         console.log('current bpm : '+link.bpm);
-        if (data > 0) {
+        if (data.bpm > 0) {
             link.bpm++;
         } else {
             link.bpm--;
