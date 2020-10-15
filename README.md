@@ -2,16 +2,6 @@
 
 example of [node-abletonlink](https://github.com/2bbb/node-abletonlink)
 
-## install
-
-```
-npm install
-```
-
-## start
-
-```
-npm start
-```
+in a terminal window, run 'node index.js'
 
 open `http://localhost:3000/` on your browser.
